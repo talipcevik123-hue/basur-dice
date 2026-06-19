@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>BUZZ DICE - PREMIUM LIVE EXPERIENCE</title>
+    <style>
+        :root { --bg: #05070f; }
+        body { 
+            margin: 0; background: var(--bg); color: white; 
+            font-family: 'Arial Black', sans-serif; display: flex; 
+            flex-direction: column; align-items: center; min-height: 100vh; 
+            overflow-x: hidden;
+            animation: moveLiveTheme 30s linear infinite;
+        }
+        
+        @keyframes moveLiveTheme {
+            0% { background-position: 0px 0px; }
+            100% { background-position: 300px 300px; }
+        }
+
+        #sound-toggle { position: fixed; top: 20px; left: 20px; font-size: 30px; cursor: pointer; background: rgba(0,0,0,0.85); border: 2px solid #fff; border-radius: 50%; padding: 12px; z-index: 100; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
+        
+        /* YENİ NESİL, PARLAK VE HAREKETLİ LOGO TASARIMI */
+        header { margin-top: 30px; text-align: center; z-index: 5; }
+        .logo { 
+            font-size: 5.5rem; 
+            letter-spacing: 12px; 
+            margin: 0; 
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            background: linear-gradient(to right, #00f2fe, #4facfe, #38bdf8, #00f2fe);
+            background-size: 200% auto;
+            color: #fff;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+            filter: drop-shadow(0 0 25px rgba(0, 242, 254, 0.6));
+            text-transform: uppercase;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Jilet Gibi Sıkıştırılmış Paneller */
+        .dashboard { 
+            display: flex; justify-content: space-between; width: 96%; 
+            max-width: 1600px; margin-top: 30px; gap: 35px; z-index: 5;
+        }
+
+        .sidebar { 
+            width: 240px; height: fit-content; 
+            background: rgba(3, 5, 11, 0.93); border: 2px solid #1e293b; 
+            border-radius: 20px; padding: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.9);
+            backdrop-filter: blur(12px);
+        }
+        .sidebar h3 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 10px; font-size: 1rem; color: #94a3b8; text-align: center; letter-spacing: 1px; }
+
+        .color-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 0.9rem; }
+        .color-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 5px rgba(0,0,0,0.6); }
+
+        .history-row { display: flex; gap: 8px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; margin-bottom: 10px; justify-content: center; border: 1px solid rgba(255,255,255,0.05); }
+        .history-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; }
+
+        /* Merkez Oyun Alanı */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 60px; justify-content: center; }
+        
+        .control-panel { display: flex; gap: 20px; background: rgba(0,0,0,0.9); padding: 15px 30px; border-radius: 18px; border: 2px solid #1e293b; }
+        select { font-size: 1.1rem; padding: 10px 20px; border-radius: 10px; background: #090d16; color: white; cursor: pointer; border: 2px solid #334155; font-family: 'Arial Black', sans-serif; outline: none; }
+
+        .btn-theme-trigger { font-size: 1.1rem; padding: 10px 20px; border-radius: 10px; background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border: 2px solid #475569; cursor: pointer; font-family: 'Arial Black', sans-serif; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
+        .btn-theme-trigger:hover { border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+
+        /* Başlangıçta Tamamen Gizli Tema Paneli */
+        .theme-sidebar { position: fixed; top: 0; right: -360px; width: 320px; height: 100vh; background: rgba(4, 7, 15, 0.98); border-left: 3px solid #38bdf8; box-shadow: -10px 0 40px rgba(0,0,0,0.9); z-index: 1000; transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; box-sizing: border-box; overflow-y: auto; }
+        .theme-sidebar.open { right: 0; }
+        .theme-sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e293b; padding-bottom: 15px; margin-bottom: 20px; }
+        .close-sidebar { font-size: 24px; cursor: pointer; color: #64748b; transition: 0.2s; }
+        .close-sidebar:hover { color: #ef4444; }
+
+        .theme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .theme-card { background: #0f172a; border: 2px solid #1e293b; border-radius: 16px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .theme-card:hover { border-color: #38bdf8; background: #1e293b; transform: scale(1.03); }
+        .theme-card .emoji { font-size: 2.2rem; margin-bottom: 5px; display: block; }
+        .theme-card .name { font-size: 0.8rem; color: #94a3b8; font-family: sans-serif; font-weight: bold; }
+
+        /* Zar Alanı */
+        .dice-container { display: flex; gap: 45px; flex-wrap: wrap; justify-content: center; align-items: center; perspective: 2000px; min-height: 250px; width: 100%; }
+        .scene { width: 140px; height: 140px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .floor-shadow { position: absolute; bottom: -35px; width: 120px; height: 18px; background: radial-gradient(ellipse, rgba(0,0,0,0.85) 0%, transparent 70%); border-radius: 50%; filter: blur(5px); transition: transform 1.5s ease, opacity 1.5s ease; z-index: 1; pointer-events: none; }
+        .rolling-shadow { transform: scale(0.5); opacity: 0.3; }
+
+        .cube { width: 140px; height: 140px; position: relative; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.1, 0.85, 0.25, 1); z-index: 2; }
+        
+        .cube-face { 
+            position: absolute; width: 140px; height: 140px; border: 4px solid #ffffff; 
+            border-radius: 22px; display: flex; align-items: center; justify-content: center; 
+            backface-visibility: hidden;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), inset 0 0 50px rgba(255,255,255,0.2), 0 5px 15px rgba(0,0,0,0.4);
+        }
+        .center-dot { width: 34px; height: 34px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 15px rgba(255,255,255,0.9), inset 0 3px 5px rgba(0,0,0,0.4); }
+
+        .face-front  { transform: rotateY(0deg) translateZ(70px); background: radial-gradient(circle, #dc2626 0%, #991b1b 100%); } 
+        .face-back   { transform: rotateY(180deg) translateZ(70px); background: radial-gradient(circle, #ea580c 0%, #9a3412 100%); } 
+        .face-right  { transform: rotateY(90deg) translateZ(70px); background: radial-gradient(circle, #eab308 0%, #854d0e 100%); } 
+        .face-left   { transform: rotateY(-90deg) translateZ(70px); background: radial-gradient(circle, #16a34a 0%, #166534 100%); } 
+        .face-top    { transform: rotateX(90deg) translateZ(70px); background: radial-gradient(circle, #2563eb 0%, #1e3a8a 100%); } 
+        .face-bottom { transform: rotateX(-90deg) translateZ(70px); background: radial-gradient(circle, #9333ea 0%, #581c87 100%); } 
+
+        .btn-roll { padding: 20px 90px; font-size: 2.2rem; font-weight: 900; background: linear-gradient(180deg, #dc2626, #7f1d1d); color: white; border: 3px solid #ef4444; border-radius: 20px; cursor: pointer; box-shadow: 0 12px 0 #450a0a, 0 25px 35px rgba(0,0,0,0.8); transition: 0.1s; letter-spacing: 4px; text-shadow: 0 4px 8px rgba(0,0,0,0.6); }
+        .btn-roll:active { transform: translateY(10px); box-shadow: 0 2px 0 #450a0a, 0 10px 15px rgba(0,0,0,0.8); }
+        .btn-roll:disabled { background: #1e293b; border-color: #334155; box-shadow: 0 10px 0 #0f172a; cursor: not-allowed; color: #475569; transform: translateY(2px); }
+    </style>
+</head>
+<body>
+
+    <button id="sound-toggle" onclick="toggleSound()">🔊</button>
+    <header><h1 class="logo">BUZZ DICE</h1></header>
+
+    <div class="dashboard">
+        <div class="sidebar">
+            <h3>RENK REHBERİ</h3>
+            <div id="color-list"></div>
+        </div>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <select id="count" onchange="render()">
+                    <option value="1">1 Zar</option><option value="2">2 Zar</option>
+                    <option value="3">3 Zar</option><option value="4">4 Zar</option>
+                    <option value="5">5 Zar</option><option value="6">6 Zar</option>
+                </select>
+                <button class="btn-theme-trigger" onclick="toggleThemeSidebar()">🎨 TEMALAR</button>
+            </div>
+
+            <div class="dice-container" id="dice-container"></div>
+            <button class="btn-roll" id="roll-btn" onclick="roll()">ZAR AT</button>
+        </div>
+
+        <div class="sidebar">
+            <h3>SON 3 ÇEVİRME</h3>
+            <div id="history-container">
+                <div style="text-align:center; color:#475569; margin-top:10px; font-size:0.9rem;">Zarlar bekleniyor...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="theme-sidebar" id="theme-sidebar">
+        <div class="theme-sidebar-header">
+            <h3 style="margin:0; color:#38bdf8;">CANLI TEMALAR</h3>
+            <span class="close-sidebar" onclick="toggleThemeSidebar()">✕</span>
+        </div>
+        <div class="theme-grid" id="theme-grid"></div>
+    </div>
+
+    <script>
+        const colors = ['#b91c1c', '#c2410c', '#ca8a04', '#15803d', '#1d4ed8', '#7e22ce'];
+        const colorNames = ['Kırmızı', 'Turuncu', 'Sarı', 'Yeşil', 'Mavi', 'Mor'];
+        const rotations = [
+            { rx: 0, ry: 0 }, { rx: 0, ry: -180 }, { rx: 0, ry: -90 }, 
+            { rx: 0, ry: 90 }, { rx: -90, ry: 0 }, { rx: 90, ry: 0 }
+        ];
+
+        let soundEnabled = true;
+        let isRolling = false;
+        let historyData = [];
+
+        // YENİ: Gerçekçi Zar Sesi (Google Kütüphanesinden Orijinal Foley Sesi)
+        const realDiceSound = new Audio("https://actions.google.com/sounds/v1/foley/rolling_dice.ogg");
+
+        const themeDetails = [
+            { id: "vegas", emoji: "🎲", name: "Vegas VIP" },
+            { id: "cyber", emoji: "🤖", name: "Cyber Grid" },
+            { id: "royal", emoji: "👑", name: "Kraliyet" },
+            { id: "sea", emoji: "🌌", name: "Derin Deniz" },
+            { id: "volcano", emoji: "🌋", name: "Magma" },
+            { id: "eyes", emoji: "👁️", name: "Karanlık Göz" },
+            { id: "dorado", emoji: "🪙", name: "El Dorado" },
+            { id: "tokyo", emoji: "🗼", name: "Tokyo Neon" },
+            { id: "atlantis", emoji: "🔱", name: "Atlantis" },
+            { id: "carbon", emoji: "🔌", name: "Karbon Akışı" },
+            { id: "desert", emoji: "🏜️", name: "Çöl Rüzgarı" },
+            { id: "aurora", emoji: "🔮", name: "Aurora" },
+            { id: "zombie", emoji: "☣️", name: "Toksik Sis" },
+            { id: "arcade", emoji: "🕹️", name: "Arcade Matris" },
+            { id: "sapphire", emoji: "💎", name: "Safir Işıltısı" },
+            { id: "mars", emoji: "🪐", name: "Mars Yüzeyi" },
+            { id: "platinum", emoji: "🤍", name: "Platin VIP" },
+            { id: "mocha", emoji: "☕", name: "Kahve Evi" },
+            { id: "hypno", emoji: "🌀", name: "Hipnoz" },
+            { id: "steampunk", emoji: "⚙️", name: "Buharlı Dişli" }
+        ];
+
+        const themes = {
+            "vegas": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='25' fill='none' stroke='%23047857' stroke-width='1' stroke-opacity='0.4'/%3E%3C/svg%3E\"), radial-gradient(circle, #064e3b 0%, #022c22 100%)",
+            "cyber": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cpath d='M 50 0 L 0 0 0 50' fill='none' stroke='%2306b6d4' stroke-width='1' stroke-opacity='0.3'/%3E%3C/svg%3E\"), #030712",
+            "royal": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M10 60 L20 30 L40 45 L60 30 L70 60 Z' fill='%23eab308' fill-opacity='0.15'/%3E%3C/svg%3E\"), linear-gradient(135deg, #1e1b4b 0%, #030712 100%)",
+            "sea": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='20' cy='30' r='2' fill='%23fff' fill-opacity='0.5'/%3E%3Ccircle cx='80' cy='70' r='1.5' fill='%23fff' fill-opacity='0.4'/%3E%3C/svg%3E\"), radial-gradient(circle, #0f172a 0%, #020617 100%)",
+            "volcano": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cpath d='M0 100 Q50 20 100 100' fill='none' stroke='%23ef4444' stroke-width='1.5' stroke-opacity='0.3'/%3E%3C/svg%3E\"), radial-gradient(circle, #450a0a 0%, #000000 100%)",
+            "eyes": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cellipse cx='60' cy='60' rx='18' ry='6' fill='%23dc2626' fill-opacity='0.3'/%3E%3Ccircle cx='60' cy='60' r='3' fill='%23000'/%3E%3C/svg%3E\"), #050000",
+            "dorado": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect width='40' height='40' x='10' y='10' fill='none' stroke='%23ca8a04' stroke-width='1' stroke-opacity='0.3'/%3E%3C/svg%3E\"), #2e1e05",
+            "tokyo": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cline x1='0' y1='40' x2='80' y2='40' stroke='%23db2777' stroke-width='1' stroke-opacity='0.4'/%3E%3C/svg%3E\"), #0c0a14",
+            "atlantis": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='50'%3E%3Cpath d='M0 25 Q25 0 50 25 T100 25' fill='none' stroke='%230ea5e9' stroke-width='2' stroke-opacity='0.3'/%3E%3C/svg%3E\"), #031e30",
+            "carbon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='4' height='4' fill='%23334155' fill-opacity='0.5'/%3E%3C/svg%3E\"), #0f172a",
+            "desert": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Cpath d='M0 50 Q60 10 120 50' fill='none' stroke='%23b45309' stroke-width='2' stroke-opacity='0.3'/%3E%3C/svg%3E\"), #291503",
+            "aurora": "radial-gradient(ellipse at center, rgba(34,197,94,0.3) 0%, transparent 80%), #050b14",
+            "zombie": "radial-gradient(circle at center, rgba(132,204,22,0.25) 0%, transparent 75%), #050f05",
+            "arcade": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='none' stroke='%23a855f7' stroke-width='2' stroke-opacity='0.3'/%3E%3C/svg%3E\"), #080312",
+            "sapphire": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpolygon points='30,5 55,30 30,55 5,30' fill='none' stroke='%232563eb' stroke-width='2' stroke-opacity='0.4'/%3E%3C/svg%3E\"), #04112e",
+            "mars": "radial-gradient(circle, #7c2d12 0%, #1c0a05 100%)",
+            "platinum": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%2394a3b8' stroke-width='1' stroke-opacity='0.1'/%3E%3C/svg%3E\"), linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+            "mocha": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='20'%3E%3Cline x1='0' y1='10' x2='100' y2='10' stroke='%23451a03' stroke-width='3' stroke-opacity='0.4'/%3E%3C/svg%3E\"), #1c0d02",
+            "hypno": "radial-gradient(circle, transparent 30%, rgba(255,255,255,0.08) 31%, transparent 60%), #0a0a14",
+            "steampunk": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='40' cy='40' r='15' fill='none' stroke='%239a3412' stroke-width='3' stroke-opacity='0.3'/%3E%3C/svg%3E\"), #1a0b05"
+        };
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-toggle').innerText = soundEnabled ? "🔊" : "🔇";
+        }
+
+        function toggleThemeSidebar() {
+            document.getElementById('theme-sidebar').classList.toggle('open');
+        }
+
+        // YENİ SİSTEM: Gerçekçi sesi oynatma
+        function playSound() {
+            if(!soundEnabled) return;
+            realDiceSound.currentTime = 0; // Başa sar
+            realDiceSound.volume = 0.8;
+            realDiceSound.play().catch(e => console.log("Tarayıcı sesi engelledi: ", e));
+        }
+
+        function selectTheme(themeId) {
+            document.body.style.background = themes[themeId];
+            
+            // Eğer panel açıksa kapat
+            if(document.getElementById('theme-sidebar').classList.contains('open')) {
+                toggleThemeSidebar();
+            }
+        }
+
+        function buildThemeGrid() {
+            const grid = document.getElementById('theme-grid');
+            grid.innerHTML = '';
+            themeDetails.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'theme-card';
+                card.onclick = () => selectTheme(t.id);
+                card.innerHTML = `<span class="emoji">${t.emoji}</span><span class="name">${t.name}</span>`;
+                grid.appendChild(card);
+            });
+        }
+
+        function buildColorList() {
+            const list = document.getElementById('color-list');
+            list.innerHTML = '';
+            colors.forEach((color, idx) => {
+                const item = document.createElement('div');
+                item.className = 'color-item';
+                item.innerHTML = `<div class="color-box" style="background:${color}"></div> <span>${colorNames[idx]} (%16.6)</span>`;
+                list.appendChild(item);
+            });
+        }
+
+        function render() {
+            const container = document.getElementById('dice-container');
+            container.innerHTML = '';
+            const num = parseInt(document.getElementById('count').value);
+            for(let i=0; i<num; i++) {
+                const scene = document.createElement('div');
+                scene.className = 'scene';
+                
+                const shadow = document.createElement('div');
+                shadow.className = 'floor-shadow';
+                shadow.id = 'shadow-' + i;
+                
+                const cube = document.createElement('div');
+                cube.className = 'cube';
+                cube.id = 'cube-' + i;
+                
+                ['front', 'back', 'right', 'left', 'top', 'bottom'].forEach(face => {
+                    const f = document.createElement('div');
+                    f.className = `cube-face face-${face}`;
+                    f.innerHTML = '<div class="center-dot"></div>';
+                    cube.appendChild(f);
+                });
+                
+                scene.appendChild(cube);
+                scene.appendChild(shadow);
+                container.appendChild(scene);
+            }
+        }
+
+        function roll() {
+            if(isRolling) return;
+            const btn = document.getElementById('roll-btn');
+            btn.disabled = true;
+            isRolling = true;
+            playSound();
+            
+            const num = parseInt(document.getElementById('count').value);
+            let thisRollResults = [];
+
+            for(let i=0; i<num; i++) {
+                const cube = document.getElementById('cube-' + i);
+                const shadow = document.getElementById('shadow-' + i);
+                
+                cube.style.transition = 'none';
+                cube.style.transform = `rotateX(0deg) rotateY(0deg)`;
+                shadow.classList.add('rolling-shadow');
+                
+                const randomFace = Math.floor(Math.random() * 6);
+                thisRollResults.push(colors[randomFace]);
+
+                setTimeout(() => {
+                    cube.style.transition = `transform 1.5s cubic-bezier(0.1, 0.85, 0.25, 1)`;
+                    const rot = rotations[randomFace];
+                    const extraSpinsX = (Math.floor(Math.random() * 3) + 4) * 360;
+                    const extraSpinsY = (Math.floor(Math.random() * 3) + 4) * 360;
+                    cube.style.transform = `rotateX(${rot.rx + extraSpinsX}deg) rotateY(${rot.ry + extraSpinsY}deg)`;
+                }, 50);
+            }
+
+            setTimeout(() => { 
+                btn.disabled = false; 
+                isRolling = false;
+                
+                for(let i=0; i<num; i++) {
+                    document.getElementById('shadow-' + i).classList.remove('rolling-shadow');
+                }
+                
+                historyData.unshift(thisRollResults);
+                if(historyData.length > 3) historyData.pop(); 
+                
+                const histContainer = document.getElementById('history-container');
+                histContainer.innerHTML = '';
+                
+                historyData.forEach(rollGroup => {
+                    const row = document.createElement('div');
+                    row.className = 'history-row';
+                    rollGroup.forEach(color => {
+                        const dot = document.createElement('div');
+                        dot.className = 'history-dot';
+                        dot.style.backgroundColor = color;
+                        row.appendChild(dot);
+                    });
+                    histContainer.appendChild(row);
+                });
+            }, 1600);
+        }
+
+        document.addEventListener('keydown', (e) => { 
+            if(e.code === 'Space') {
+                e.preventDefault(); 
+                if(!document.getElementById('roll-btn').disabled) roll(); 
+            }
+        });
+        
+        // Başlangıç teması atanıyor ama TEMA PANELİ AÇILMIYOR
+        selectTheme('vegas');
+        buildThemeGrid();
+        buildColorList();
+        render();
+    </script>
+</body>
+</html>
